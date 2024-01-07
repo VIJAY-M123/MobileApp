@@ -1,26 +1,19 @@
 import { useForm } from "react-hook-form";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-
+import {StyleSheet, Text, TextInput, View } from "react-native";
 import { Controller } from "react-hook-form";
+import { Button } from "react-native-elements";
 
 
-import  * as yup from "yup";
 
-const defaultValues = {
-username:"",
-password:"",
-}
 
-// const schema = yup.object().shape({
-// username:yup.string().required('Must enter the username'),
-// password:yup.string().required("Enter a password"),
-// })
  
 export default function Login(){
 
-    const {handleSubmit, reset, setValue,control, getValues, formState={errors}} = useForm({
-        mode:"onChange",
-        defaultValues,
+    const {handleSubmit, reset, setValue,control, getValues,  formState: { errors }} = useForm({
+      defaultValues : {
+        username:"",
+        password:"",
+        }
        
     })
 
@@ -39,32 +32,52 @@ const onSubmit = (data) =>{
               rules={{
                 required: "required",
               }}
-              render={({field})=>(
+              render={({ field: { onChange, onBlur, value } })=>(
                 <TextInput 
-                {...field}
                 style={styles.textfield} 
-                placeholder="Enter your name"/>
-                
+                placeholder="Username"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              
+              />
               )}
               />
-             {errors.username && <Text style={{ color: 'red' }}>{errors.username.message}</Text>}
-               <Controller
+             {errors.username && <Text style={styles.errorText} > sssRequired</Text>}
+            
+
+             <Controller
               name="password"
               control={control}
-              render={({field})=>(
+              rules={{
+                required: "required",
+              }}
+              render={({ field: { onChange, onBlur, value } })=>(
                 <TextInput 
-                {...field}
-                secureTextEntry 
                 style={styles.textfield} 
-                placeholder="Enter your password"/>
+                placeholder="Password"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              
+              />
               )}
               />
-             
+             {errors.password && <Text style={styles.errorText} > sssRequired</Text>}
+          
               
               <View style={styles.forgetpassword}>
                 <Text style={{color:"#00ccff"}}>Forget Password</Text>
               </View>
-              <Button title="Login" onPress={handleSubmit(onSubmit)}/>
+              <Button title="Login" 
+             
+              containerStyle={{backgroundColor:'#00ccff', width:"100%", borderRadius:10 }} 
+              titleStyle={{color:"white",fontSize:20}}
+              buttonStyle={{
+                backgroundColor:"#00ccff",
+                height: 50, // Set your desired height here
+              }}
+              onPress={handleSubmit(onSubmit)}/>
             </View>
            
         </View>
@@ -80,6 +93,7 @@ const styles = StyleSheet.create({
         alignItems:"flex-end",
         //padding:30,
     },
+
     main:{  
     backgroundColor:"white",
     height:600,
@@ -90,6 +104,7 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     padding:30,
     },
+
     welcome:{
      fontSize:30,
      fontWeight:"bold",
@@ -97,14 +112,14 @@ const styles = StyleSheet.create({
      marginBottom:20,
     },
     account:{
-        fontSize:15,
-        marginBottom:40,
-       },
+      fontSize:15,
+      marginBottom:40,
+      },
     textfield:{
     width:"100%",
     height:50,
     //backgroundColor:"red",
-    marginBottom:20,
+    //marginBottom:20,
     borderBottomWidth:2
     },
     forgetpassword: {
@@ -112,6 +127,11 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
         marginBottom:40,
+        marginTop:20,
       },
+    errorText:{
+      width:"100%",
+      color:"red"
+    },
    
 })
