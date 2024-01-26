@@ -1,23 +1,62 @@
 import { Controller, useForm } from "react-hook-form";
-import { StyleSheet, Text, TextInput, View,Image } from "react-native";
+import { StyleSheet, Text, TextInput, View,Image, Alert } from "react-native";
 import { Button } from "react-native-elements";
 
 import logo from "../../assets/Image/Leaf.png";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+
 
 
 export default function RegisterPage(){
-    const {handleSubmit, control ,formState : {errors}} = useForm({
+  const navigation = useNavigation();
+    const {handleSubmit, control ,reset,formState : {errors}} = useForm({
         defaultValues:{
          username:"",
          email:"",
          password:"",
-         confirmpassword:""
-
         }
     })
 
-    const onSubmit = (data) =>{
+    const fetchData = (data) => {
+      const newData = {
+        username:data?.username,
+        email:data?.email,
+        password:data?.password
+      }
+      return new Promise((resolve, reject) => {
+        axios.post('http://192.168.2.72:4000/register',newData)
+          .then((response) => {
+            console.log("Promis respone",response)
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    };
+
+    const onSubmit = async (data) =>{
         console.log("Data",data)
+        
+        fetchData(data)
+        .then((response) => {
+          if(response.status === 200){
+            console.log('Data:', data);
+            reset();
+            Alert.alert(`${response.data.message}`);
+            navigation.navigate('UserCreation')
+          }
+          else{
+            Alert.alert(`${response.data.message}`);
+          }
+         
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+
+       
     }
     return(
         <View style={styles.container}>
@@ -26,6 +65,7 @@ export default function RegisterPage(){
              </View>
             <View style={styles.main}>
               <Text style={styles.welcome}>Welcome</Text>
+              <Text style={styles.account}>Already have an account? <Text style={{color:"#00ccff"}} onPress={()=>navigation.navigate('LoginPage')}>Login</Text></Text>
               <Controller
               name="username"
               control={control}
@@ -42,7 +82,7 @@ export default function RegisterPage(){
                 />
               )}
               />
-               {errors.username && <Text style={styles.errorText} >Enter a username</Text>}
+               {errors.username && <Text style={styles.errorText} >Please enter a Username</Text>}
               <Controller
               name="email"
               control={control}
@@ -59,7 +99,7 @@ export default function RegisterPage(){
                 />
               )}
               />
-               {errors.email && <Text style={styles.errorText} >Enter a email</Text>}
+               {errors.email && <Text style={styles.errorText} >Please enter a Email</Text>}
               <Controller
               name="password"
               control={control}
@@ -76,27 +116,7 @@ export default function RegisterPage(){
                 />
               )}
               />
-               {errors.password && <Text style={styles.errorText} >Enter a password</Text>}
-
-             <Controller
-              name="confirmpassword"
-              control={control}
-              rules={{
-                required: "required",
-              }}
-              render={({field: {onChange, onBlur,value}})=>(
-                <TextInput 
-                style={styles.textfield} 
-                placeholder="Confirm Password"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                />
-              )}
-              />
-               {errors.confirmpassword && <Text style={styles.errorText} >Enter a confirmpassword</Text>}
-              
-              
+               {errors.password && <Text style={styles.errorText} >Please enter a Password</Text>}
               <Button title="Register" 
              
              containerStyle={{backgroundColor:'#00ccff', width:"100%", borderRadius:10, marginTop:40 }} 
@@ -104,7 +124,6 @@ export default function RegisterPage(){
              buttonStyle={{
                backgroundColor:"#00ccff",
                height: 50,
-               // Set your desired height here
              }}
              onPress={handleSubmit(onSubmit)}/>
             </View>
@@ -120,15 +139,12 @@ const styles = StyleSheet.create({
         width:"100%",
         justifyContent:"flex-end",
         alignItems:"flex-end",
-        //padding:30,
     },
     imagecontainer:{
-      //height:400,
       width:"100%",
       flex:1,
       justifyContent:"center",
       alignItems:"center",
-      //backgroundColor:"red"
      },
     main:{  
     backgroundColor:"white",
@@ -146,20 +162,21 @@ const styles = StyleSheet.create({
      color:"#00ccff",
      marginBottom:20,
     },
-  
+    account:{
+      fontSize:16,
+      marginBottom:40,
+      },
     textfield:{
     width:"100%",
-    //height:50,
-    //backgroundColor:"red",
-   // marginBottom:20,
+    height:50,
+    fontSize:20,
     borderBottomWidth:2,
     borderBottomColor:"#e0e0e0",
-   // marginBottom:30
-   margin:20
+   margin:10
     },
     errorText:{
         width:"100%",
-       marginTop:-20,
+       marginTop:-10,
    color:"red"
       },
   

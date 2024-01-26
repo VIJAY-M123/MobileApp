@@ -1,30 +1,62 @@
 import { useForm } from "react-hook-form";
-import {Image, StyleSheet, Text, TextInput, View } from "react-native";
+import {Alert, Image, StyleSheet, Text, TextInput, View } from "react-native";
 import { Controller } from "react-hook-form";
 import { Button } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 
 import logo from "../../assets/Image/Leaf.png";
+import axios from "axios";
 
 
  
 export default function LoginPage(){
 
-  const Navigate = useNavigation();
+  const navigation = useNavigation();
 
     const {handleSubmit, reset, setValue,control, getValues,  formState: { errors }} = useForm({
       defaultValues : {
-        username:"",
+        email:"",
         password:"",
         }
        
     })
 
-const onSubmit = (data) =>{
-    console.log("Data",data)
-  Navigate.navigate('main')
-    
-}
+    const fetchData = (data) => {
+      const newData = {
+        email:data?.email,
+        password:data?.password
+      }
+      return new Promise((resolve, reject) => {
+        axios.post('http://192.168.2.72:4000/login',newData)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    };
+
+    const onSubmit = async (data) =>{
+        
+        fetchData(data)
+        .then((response) => {
+          if(response.status === 200){
+            reset();
+            Alert.alert(`${response.data.message}`);
+            navigation.navigate('main')
+          }
+          else{
+            Alert.alert(`${response.data.message}`);
+          }
+         
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+
+       
+    }
     return(
         <View style={styles.container}>
              <View style={styles.imagecontainer}>
@@ -32,9 +64,9 @@ const onSubmit = (data) =>{
              </View>
             <View style={styles.main}>
               <Text style={styles.welcome}>Welcome</Text>
-              <Text style={styles.account}>Don't have an account? <Text style={{color:"#00ccff"}} onPress={()=>Navigate.navigate('RegisterPage')}>Register Now</Text></Text>
+              <Text style={styles.account}>Don't have an account? <Text style={{color:"#00ccff"}} onPress={()=>navigation.navigate('RegisterPage')}>Register Now</Text></Text>
               <Controller
-              name="username"
+              name="email"
               control={control}
               rules={{
                 required: "required",
@@ -42,7 +74,7 @@ const onSubmit = (data) =>{
               render={({ field: { onChange, onBlur, value } })=>(
                 <TextInput 
                 style={styles.textfield} 
-                placeholder="Username"
+                placeholder="Email"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -50,7 +82,7 @@ const onSubmit = (data) =>{
               />
               )}
               />
-             {errors.username && <Text style={styles.errorText} >Must enter a username</Text>}
+             {errors.email && <Text style={styles.errorText} >Must enter a email</Text>}
             
 
              <Controller
@@ -98,21 +130,17 @@ const styles = StyleSheet.create({
         width:"100%",
         justifyContent:"flex-end",
         alignItems:"flex-end",
-        //padding:30,
     },
 
     imagecontainer:{
-     //height:400,
      width:"100%",
      flex:1,
      justifyContent:"center",
      alignItems:"center",
-     //backgroundColor:"red"
     },
 
     main:{  
     backgroundColor:"white",
-    //height:600,
     flex:2,
     width:"100%",
     borderTopLeftRadius:50,
@@ -135,8 +163,7 @@ const styles = StyleSheet.create({
     textfield:{
     width:"100%",
     height:50,
-    //backgroundColor:"red",
-    //marginBottom:20,
+    fontSize:20,
     borderBottomWidth:2,
     borderBottomColor:"#e0e0e0",
     margin:15

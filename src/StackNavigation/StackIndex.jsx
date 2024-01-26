@@ -5,6 +5,8 @@ import RegisterPage from '../Screen/RegisterPage';
 import Main from '../Screen/HomePage';
 import DrawerIndex from '../DrawerNavigation/DrawerIndex';
 import AppBar from '../Components/AppBar/AppBar';
+import UserCreationPage from '../Screen/UserCreationPage';
+import UserCreationForm from '../Screen/UserCreationForm';
 const Stack = createNativeStackNavigator();
 
 function StackIndex() {
@@ -19,6 +21,8 @@ function StackIndex() {
           component={DrawerIndex}
          
            />
+           <Stack.Screen name="UserCreation" component={UserCreationPage} />
+           <Stack.Screen name="UserForm" component={UserCreationForm}/>
         </Stack.Navigator>
   )
 }
