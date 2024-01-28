@@ -87,7 +87,11 @@ export default function RegisterPage(){
               name="email"
               control={control}
               rules={{
-                required: "required",
+                required: "Please enter a Email",
+                pattern: {
+                  value:/^[a-z0-9._%+-]+@gmail\.com$/i,
+                  message: "Invalid email address",
+                },
               }}
               render={({field: {onChange, onBlur,value}})=>(
                 <TextInput 
@@ -99,7 +103,7 @@ export default function RegisterPage(){
                 />
               )}
               />
-               {errors.email && <Text style={styles.errorText} >Please enter a Email</Text>}
+               {errors.email && <Text style={styles.errorText} >{errors.email.message}</Text>}
               <Controller
               name="password"
               control={control}

@@ -9,6 +9,7 @@ import StackIndex from './src/StackNavigation/StackIndex';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import DrawerIndex from './src/DrawerNavigation/DrawerIndex';
 import 'react-native-gesture-handler';
+import UserCreationForm from './src/Screen/UserCreationForm';
 
 
 const Drawer = createDrawerNavigator();
@@ -17,6 +18,8 @@ export default function App() {
   return (
       <NavigationContainer>
        <StackIndex/>
+       {/* <DrawerIndex/> */}
+       {/* <UserCreationForm/> */}
       </NavigationContainer>
       
     
